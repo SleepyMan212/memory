@@ -1,6 +1,4 @@
-<?php
-require 'page.php';
- ?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -76,12 +74,40 @@ require 'page.php';
        <div class="page">
          <ul>
            <?php
-             for($i=1; $i<=$num_pages; $i++){
-               echo
-               "<li>
-                 <a href=index.php?page=$i>$i</a>
-               </li>";
-             }
+           if($num_pages!=1){
+             echo
+             "<li>
+               <a href=index.php?page=1>第一頁</a>
+             </li>";
+           }
+           if($num_pages>1){
+             echo
+             "<li>
+               <a href=index.php?page". ($num_pages-1) .">上一頁</a>
+             </li>";
+           }
+           if($num_pages<$total_pages){
+             echo
+             "<li>
+               <a href=index.php?page=". ($num_pages+1) .">下一頁</a>
+             </li>";
+           }
+           if($num_pages!=$total_pages){
+             echo
+             "<li>
+               <a href=index.php?page=1>最末頁</a>
+             </li>";
+           }
+
+            // // refresh();
+            // // function refresh(){
+            //    for($i=1; $i<=$num_pages; $i++){
+            //      echo
+            //      "<li>
+            //        <a href=index.php?page=$i>$i</a>
+            //      </li>";
+            //    }
+             // }
            // }
             ?>
          </ul>
@@ -122,7 +148,7 @@ require 'page.php';
                       $(e.target).parents('.data').hide(1000);
                     }
                   });
-                <?php } ?>
+                <?php }?>
               },
               error:function(jqXHR){
                 alert("發生錯誤"+jqXHR.status);
