@@ -1,4 +1,21 @@
-
+<?php
+require 'connectMysql.php';
+$pageRow_records = 5; //每頁筆數
+$num_pages = 1; //預設頁數
+// 如果有參數就設定
+if(isset($_GET['page'])) $num_pages = $_GET['page'];
+$startRow_records=($num_pages-1)*$pageRow_records;
+$query_num = "SELECT * FROM task ";
+$query_all_data = "SELECT * FROM task Where finish = 0 ORDER BY num ASC";
+$query_limit_data = "SELECT * FROM task Where finish = 0 ORDER BY num ASC LIMIT {$startRow_records},{$pageRow_records}";
+$all_data = $db_link->query($query_all_data);
+$limit_data = $db_link->query($query_limit_data);
+$num_data= $db_link->query($query_num);
+$num = $num_data->num_rows;
+$all_record = $all_data->num_rows; //總共筆數
+$limit_record = $limit_data->num_rows;
+$total_pages = ceil($all_record/$pageRow_records);
+ ?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -29,7 +46,11 @@
         <button type="button" name="submit" class="input btn-primary btn" id="submit">送出</button>
     </div>
     <div class="list">
-      <h2>待辦事項</h2>
+      <div class="field">
+        <h2>待辦事項</h2>
+        <p id="total_finish" style="float:right; margin-right:10px;">總共完成: <?php echo $num-$all_record; ?> 筆事項</p>
+        <p class="total_unfinish">總共還有: <?php echo $all_record; ?> 筆事項</p>
+      </div>
       <hr>
       <div class="formname">
         <span>號碼</span>
@@ -40,21 +61,7 @@
       </div>
 
       <?php
-        // refresh_page();
-        // function refresh_page(){
-        require 'connectMysql.php';
-        $pageRow_records = 5; //每頁筆數
-        $num_pages = 1; //預設頁數
-        // 如果有參數就設定
-        if(isset($_GET['page'])) $num_pages = $_GET['page'];
-        $startRow_records=($num_pages-1)*$pageRow_records;
-        $query_all_data = "SELECT * FROM task Where finish = 0 ORDER BY num ASC";
-        $query_limit_data = "SELECT * FROM task Where finish = 0 ORDER BY num ASC LIMIT {$startRow_records},{$pageRow_records}";
-        $all_data = $db_link->query($query_all_data);
-        $limit_data = $db_link->query($query_limit_data);
-        $all_record = $all_data->num_rows; //總共筆數
-        $limit_record = $limit_data->num_rows;
-        $total_pages = ceil($all_record/$pageRow_records);
+
         while ($data = $limit_data->fetch_assoc()) {
           echo
           "
@@ -99,16 +106,6 @@
              </li>";
            }
 
-            // // refresh();
-            // // function refresh(){
-            //    for($i=1; $i<=$num_pages; $i++){
-            //      echo
-            //      "<li>
-            //        <a href=index.php?page=$i>$i</a>
-            //      </li>";
-            //    }
-             // }
-           // }
             ?>
          </ul>
        </div>
@@ -117,6 +114,8 @@
       <script>
         $(document).ready(function(){
           $("#submit").click( () => {
+            $(".total_unfinish").text("總共還有: <?php echo ($all_record+1); ?> 筆事項");
+
             alert(`showData.php?importance=${$("#importance").val()}&task=${$("#task").val()}`);
             $.ajax({
               type: "get",
@@ -124,7 +123,7 @@
               dataType: "json",
               success: function (data) {
                 alert(data.msg);
-
+                console.log($(".total_unfinish"));
                 <?php
                   if($num_pages==$total_pages&&$limit_record<$pageRow_records){
                  ?>
