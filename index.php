@@ -118,13 +118,14 @@ $i=1;
         $(document).ready(function(){
           $("#submit").click( () => {
             $(".total_unfinish").text("總共還有: <?php echo (++$all_record);  ?> 筆事項");
-            alert(`showData.php?importance=${$("#importance").val()}&task=${$("#task").val()}`);
+            // alert(`showData.php?importance=${$("#importance").val()}&task=${$("#task").val()}`);
             $.ajax({
               type: "get",
               url: `./showData.php?importance=${$("#importance").val()}&task=${$("#task").val()}`,
               dataType: "json",
               success: function (data) {
-                alert(data.msg);
+                // alert(data.msg);
+                console.log(data.date);
                 console.log($(".total_unfinish"));
                 <?php
                   //如果目前筆數小於一頁筆數時顯示
@@ -133,7 +134,7 @@ $i=1;
                   content="\
                   <div class=data data-type="+data.num+">\
                     <span style='width:15px; text-align:right;display:inline-block;'>"+data.num+"</span>\
-                    <span>"+data.time+"</span>\
+                    <span>"+data.date+"</span>\
                     <span style=text-align:right>"+data.importance+"</span>\
                     <span style='width:30%;display:inline-block;margin-left:45px;'>"+data.txt+"</span>\
                     <span>\

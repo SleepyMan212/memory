@@ -13,8 +13,10 @@
     $last_task_record = $db_link->query($query_last_task);
     $last_task = $last_task_record->fetch_assoc();
     // $num = $last_task['num'];
-    echo json_encode(array('msg'=>'新增成功','txt'=>$_GET['task'],'importance'=>$_GET['importance'],'num' => $last_task['num'],'time'=>substr($data['created'],0,10)));
-
+    // if($last_task->num_rows)
+      echo json_encode(array('msg'=>'新增成功','txt'=>$_GET['task'],'importance'=>$_GET['importance'],'num' => $last_task['num'],'date'=>substr($last_task['created'],0,10)));
+    // else
+    //   echo json_encode(array('msg'=>'新增成功','nodata'=>'1'))
     // echo json_encode(array('num' => $num));
 
   }else{
