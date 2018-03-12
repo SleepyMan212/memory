@@ -46,6 +46,7 @@ $i=1;
       </select>
         <button type="button" name="submit" class="input btn-primary btn" id="submit">送出</button>
     </div>
+    
     <div class="list">
       <div class="field">
         <h2>待辦事項</h2>
@@ -85,25 +86,25 @@ $i=1;
            if($num_pages!=1){
              echo
              "<li>
-               <a href=index.php?page=1>第一頁</a>
+               <a href=?page=1>第一頁</a>
              </li>";
            }
            // if($num_pages>1){
              echo
              "<li>
-               <a href=index.php?page=". ($num_pages>1?$num_pages-1:1) .">上一頁</a>
+               <a href=?page=". ($num_pages>1?$num_pages-1:1) .">上一頁</a>
              </li>";
            // }
            // if($num_pages<$total_pages){
              echo
              "<li>
-               <a href=index.php?page=". ($num_pages<$total_pages?$num_pages+1:$total_pages) .">下一頁</a>
+               <a href=?page=". ($num_pages<$total_pages?$num_pages+1:$total_pages) .">下一頁</a>
              </li>";
            // }
            if($num_pages!=$total_pages){
              echo
              "<li>
-               <a href=index.php?page=".$total_pages.">最末頁</a>
+               <a href=?page=".$total_pages.">最末頁</a>
              </li>";
            }
             ?>
@@ -112,7 +113,6 @@ $i=1;
     </div>
       <script src="./src/js/main.js"></script>
       <script>
-        i=1;
         $(document).ready(function(){
           $("#submit").click( () => {
             $(".total_unfinish").text("總共還有: <?php echo (++$all_record);  ?> 筆事項");
@@ -125,6 +125,7 @@ $i=1;
                 alert(data.msg);
                 console.log($(".total_unfinish"));
                 <?php
+                  //如果目前筆數小於一頁筆數時顯示
                   if($num_pages==$total_pages&&$limit_record<$pageRow_records){
                  ?>
                   content="\
