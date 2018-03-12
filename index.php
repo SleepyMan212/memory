@@ -15,6 +15,7 @@ $num = $num_data->num_rows;
 $all_record = $all_data->num_rows; //總共筆數
 $limit_record = $limit_data->num_rows;
 $total_pages = ceil($all_record/$pageRow_records);
+$i=1;
  ?>
 <!DOCTYPE html>
 <html>
@@ -48,7 +49,7 @@ $total_pages = ceil($all_record/$pageRow_records);
     <div class="list">
       <div class="field">
         <h2>待辦事項</h2>
-        <p id="total_finish" style="float:right; margin-right:10px;">總共完成: <?php echo $num-$all_record; ?> 筆事項</p>
+        <p id="total_finish" style="float:right; margin-right:10px;" value="<?php echo $num-$all_record; ?>">總共完成: <?php echo $num-$all_record; ?> 筆事項</p>
         <p class="total_unfinish">總共還有: <?php echo $all_record; ?> 筆事項</p>
       </div>
       <hr>
@@ -87,35 +88,34 @@ $total_pages = ceil($all_record/$pageRow_records);
                <a href=index.php?page=1>第一頁</a>
              </li>";
            }
-           if($num_pages>1){
+           // if($num_pages>1){
              echo
              "<li>
-               <a href=index.php?page". ($num_pages-1) .">上一頁</a>
+               <a href=index.php?page=". ($num_pages>1?$num_pages-1:1) .">上一頁</a>
              </li>";
-           }
-           if($num_pages<$total_pages){
+           // }
+           // if($num_pages<$total_pages){
              echo
              "<li>
-               <a href=index.php?page=". ($num_pages+1) .">下一頁</a>
+               <a href=index.php?page=". ($num_pages<$total_pages?$num_pages+1:$total_pages) .">下一頁</a>
              </li>";
-           }
+           // }
            if($num_pages!=$total_pages){
              echo
              "<li>
-               <a href=index.php?page=1>最末頁</a>
+               <a href=index.php?page=".$total_pages.">最末頁</a>
              </li>";
            }
-
             ?>
          </ul>
        </div>
     </div>
       <script src="./src/js/main.js"></script>
       <script>
+        i=1;
         $(document).ready(function(){
           $("#submit").click( () => {
-            $(".total_unfinish").text("總共還有: <?php echo ($all_record+1); ?> 筆事項");
-
+            $(".total_unfinish").text("總共還有: <?php echo (++$all_record);  ?> 筆事項");
             alert(`showData.php?importance=${$("#importance").val()}&task=${$("#task").val()}`);
             $.ajax({
               type: "get",
