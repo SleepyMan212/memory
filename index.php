@@ -1,21 +1,30 @@
 <?php
-require 'connectMysql.php';
-$pageRow_records = 4; //每頁筆數
-$num_pages = 1; //預設頁數
-// 如果有參數就設定
-if(isset($_GET['page'])) $num_pages = $_GET['page'];
-$startRow_records=($num_pages-1)*$pageRow_records;
-$query_num = "SELECT * FROM task ";
-$query_all_data = "SELECT * FROM task Where finish = 0 ORDER BY num ASC";
-$query_limit_data = "SELECT * FROM task Where finish = 0 ORDER BY num ASC LIMIT {$startRow_records},{$pageRow_records}";
-$all_data = $db_link->query($query_all_data);
-$limit_data = $db_link->query($query_limit_data);
-$num_data= $db_link->query($query_num);
-$num = $num_data->num_rows;
-$all_record = $all_data->num_rows; //總共筆數
-$limit_record = $limit_data->num_rows;
-$total_pages = ceil($all_record/$pageRow_records);
-$i=1;
+// require 'connectMysql.php';
+require 'connectMysql2.php';
+  $pageRow_records = 4; //每頁筆數
+  $num_pages = 1; //預設頁數
+  // 如果有參數就設定
+  if(isset($_GET['page'])) $num_pages = $_GET['page'];
+  try {
+    $startRow_records=($num_pages-1)*$pageRow_records;
+    $query_num = "SELECT * FROM `task` ";
+    $query_all_data = "SELECT * FROM `task` Where finish=0 ORDER BY num ASC";
+    $query_limit_data = "SELECT * FROM `task` Where finish=0 ORDER BY num ASC LIMIT $startRow_records,$pageRow_records";
+    $all_data = $db_link->query($query_all_data);
+    // $limit_data = $db_link->prepare($query_limit_data);
+    // $limit_data->execute(array(':startRow_records'=>$startRow_records,':pageRow_records'=>$pageRow_records));
+    $limit_data = $db_link->query($query_limit_data);
+    $num_data= $db_link->query($query_num);
+    $num = $num_data->rowCount();
+    $all_record = $all_data->rowCount(); //總共筆數
+    $limit_record = $limit_data->rowCount();
+    $total_pages = ceil($all_record/$pageRow_records);
+  } catch (PDOException $e) {
+    echo $e->getMessage();
+  }
+
+
+
  ?>
 <!DOCTYPE html>
 <html>
@@ -34,19 +43,25 @@ $i=1;
         <li><a href="">專案</a></li>
       </ul>
     </div>
-    <div class="add_data">
-      <span class="input">待辦事項</span>
-      <input type="text" name="task" id="task" class="input task" size="50">
-      <select class="" name="importance" class="input" id="importance">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3" selected>3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-      </select>
-        <button type="button" name="submit" class="input btn-primary btn" id="submit">送出</button>
+    <div class="left_panel">
+      <div class="add_data">
+        <span class="input">待辦事項</span>
+        <input type="text" name="task" id="task" class="input task" size="50">
+        <select class="" name="importance" class="input" id="importance">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+          <button type="button" name="submit" class="input btn-primary btn" id="submit">送出</button>
+      </div>
+      <div class="show_time">
+
+      </div>
     </div>
-    <div class="panel">
+
+    <div class="right_panel">
       <div class="list">
         <div class="field">
           <h2>待辦事項</h2>
@@ -64,7 +79,7 @@ $i=1;
 
         <?php
 
-          while ($data = $limit_data->fetch_assoc()) {
+          while ($data = $limit_data->fetch(PDO::FETCH_ASSOC)) {
             echo
             "
             <div class=data data-type=$data[num]>
@@ -90,18 +105,16 @@ $i=1;
               <a href=?page=1>第一頁</a>
             </li>";
           }
-          // if($num_pages>1){
             echo
             "<li>
               <a href=?page=". ($num_pages>1?$num_pages-1:1) .">上一頁</a>
             </li>";
-          // }
-          // if($num_pages<$total_pages){
+
             echo
             "<li>
               <a href=?page=". ($num_pages<$total_pages?$num_pages+1:$total_pages) .">下一頁</a>
             </li>";
-          // }
+
           if($num_pages!=$total_pages){
             echo
             "<li>
@@ -113,10 +126,11 @@ $i=1;
       </div>
     </div>
 
-      <script src="./src/js/main.js"></script>
+      <script src="./src/js/main2.js"></script>
       <script>
         $(document).ready(function(){
           $("#submit").click( () => {
+            console.log("A");
             $(".total_unfinish").text("總共還有: <?php echo (++$all_record);  ?> 筆事項");
             // alert(`showData.php?importance=${$("#importance").val()}&task=${$("#task").val()}`);
             $.ajax({
@@ -130,6 +144,7 @@ $i=1;
                 <?php
                   //如果目前筆數小於一頁筆數時顯示
                   if($num_pages==$total_pages&&$limit_record<$pageRow_records){
+
                  ?>
                   content="\
                   <div class=data data-type="+data.num+">\
@@ -144,13 +159,7 @@ $i=1;
                   </div>\
                   ";
                   $(".data:last").after(content);
-                  // 把新加入的元素加入監聽事件
-                  $(".data:last").change( (e)=>{
-                    console.log($(e.target).parents('.data'));
-                    if($(e.target.checked)[0]){
-                      $(e.target).parents('.data').hide(1000);
-                    }
-                  });
+
                 <?php }?>
               },
               error:function(jqXHR){

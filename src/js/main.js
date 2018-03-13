@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
   // 在資料庫裡標記已完成
   $(".unfinish").change( (e)=>{
@@ -9,9 +10,10 @@ $(document).ready(function(){
         dataType:'json',
         success:(data)=>{
           $(e.target).parents('.data').hide(1000);
-          // console.log(data.msg);
-          // console.log(data.num);
+          console.log(data.msg+"AA");
+          console.log(data.nodata);
           if(!data.nodata){
+
             content="\
             <div class=data data-type="+data.num+">\
               <span style='width:15px; text-align:right;display:inline-block;'>"+data.num+"</span>\

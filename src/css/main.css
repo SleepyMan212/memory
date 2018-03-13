@@ -45,11 +45,11 @@
   float: right;
 }
 .add_data{
-  width: 50%;
+  /* width: 50%; */
   /* margin: 0px auto; */
   margin-top: 50px;
   margin-left: 30px;
-  float: left;
+  /* float: left; */
 }
 .input{
   display: inline;
@@ -79,8 +79,22 @@ hr{
   display: inline;
   margin: 4px;
 }
-.panel{
+.right_panel{
   width: 45%;
   height: 400px;
   float: right;
+}
+.left_panel{
+  width: 50%;
+  height: 400px;
+  float: left;
+}
+
+.show_time{
+  text-align: center;
+  line-height: 200px;
+  width: 100%;
+  height: 100%;
+  margin: 0,auto;
+  font-size: 36px;
 }
