@@ -1,5 +1,8 @@
 setInterval(function() {
-  $(".show_time").text(new Date());
+  time = new Date();
+  $(".show_time").text(time.getFullYear()+"/"+ time.getDate()+"/"+time.getDay());
+  // $(".show_time").append("<br>");
+  $(".show_time").append(" " +time.getHours()+":"+ time.getMinutes()+":"+time.getSeconds());
   // $(".show_time").text(new Date()));
 },1000);
 function AJAX(e) {
@@ -13,8 +16,13 @@ function AJAX(e) {
       success:(data)=>{
         console.log(data);
         $(e.target).parents('.data').hide(1000);
-        console.log(data.msg+"AA");
-        console.log(data.nodata);
+        $(e.target.checked)[0]=false;
+        // $(e.target).parents('.data').remove(1000);
+        // console.log(data.msg+"AA");
+        // console.log(data.nodata);
+        console.log(data.num+" "+data.finish_num);
+        $("#total_unfinish").text("總共還有: "+(data.num-data.finish_num)+" 筆事項");
+        $("#total_finish").text("總共完成: "+(data.finish_num)+" 筆事項")
         if(!data.nodata){
 
           content="\
@@ -38,6 +46,9 @@ function AJAX(e) {
           //   }
           // });
         }
+        // sleep(1000);
+        // $(e.target).parents('.data').remove();
+
       },
 
       error:function(jqXHR){
