@@ -1,7 +1,7 @@
 <?php
 // require 'connectMysql.php';
 require 'connectMysql2.php';
-  $pageRow_records = 4; //每頁筆數
+  $pageRow_records = 5; //每頁筆數
   $num_pages = 1; //預設頁數
   // 如果有參數就設定
   if(isset($_GET['page'])) $num_pages = $_GET['page'];
@@ -34,16 +34,17 @@ require 'connectMysql2.php';
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="src/css/main.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- <script src="https://gist.github.com/SleepyMan212/7422b505e143d354057c3ad13919cb43.js"></script> -->
   </head>
   <body>
     <div class="banner"></div>
     <div class="nav">
       <ul>
         <li><a href="./index.php">首頁</a></li>
-        <li><a href="">專案</a></li>
+        <li><a href="./project.php">專案</a></li>
       </ul>
     </div>
-    <div class="left_panel">
+    <div class="right_panel">
       <div class="add_data">
         <span class="input">待辦事項</span>
         <input type="text" name="task" id="task" class="input task" size="50">
@@ -61,12 +62,11 @@ require 'connectMysql2.php';
       </div>
     </div>
 
-    <div class="right_panel">
+    <div class="left_panel">
       <div class="list">
         <div class="field">
           <h2>待辦事項</h2>
-          <p id="total_finish" style="float:right; margin-right:10px;" value="<?php echo $num-$all_record; ?>">總共完成: <?php echo $num-$all_record; ?> 筆事項</p>
-          <p id="total_unfinish">總共還有: <?php echo $all_record; ?> 筆事項</p>
+
         </div>
         <hr>
         <div class="formname">
@@ -78,11 +78,11 @@ require 'connectMysql2.php';
         </div>
 
         <?php
-          if($limit_record  ){
+          if($limit_record){
             while ($data = $limit_data->fetch(PDO::FETCH_ASSOC)) {
               echo
               "
-              <div class=data data-type=$data[num]>
+              <div class='data' data-type=$data[num]>
                 <span style='width:15px; text-align:right;display:inline-block;'>$data[num]</span>
                 <span>".substr($data['created'],0,10)."</span>
                 <span style=text-align:right>$data[importance]</span>
@@ -100,12 +100,12 @@ require 'connectMysql2.php';
       <div class="page">
         <ul>
           <?php
-          if($num_pages!=1){
+          // if($num_pages!=1){
             echo
             "<li>
               <a href=?page=1>第一頁</a>
             </li>";
-          }
+          // }
             echo
             "<li>
               <a href=?page=". ($num_pages>1?$num_pages-1:1) .">上一頁</a>
@@ -113,15 +113,15 @@ require 'connectMysql2.php';
 
             echo
             "<li>
-              <a href=?page=". ($num_pages<$total_pages?$num_pages+1:$total_pages==0?1:$total_pages ) .">下一頁</a>
+              <a href=?page=". ($num_pages<$total_pages?$num_pages+1:$total_pages ) .">下一頁</a>
             </li>";
 
-          if($num_pages!=$total_pages){
+          // if($num_pages!=$total_pages){
             echo
             "<li>
               <a href=?page=".($total_pages==0?1:$total_pages).">最末頁</a>
             </li>";
-          }
+          // }
            ?>
         </ul>
       </div>
@@ -160,9 +160,25 @@ require 'connectMysql2.php';
                     </span>\
                   </div>\
                   ";
+                  // console.log($(".data:last")+"W");
                   $(".data:last").after(content);
 
-                <?php }?>
+                <?php }else if($total_pages==0){ ?>
+                  content="\
+                  <div class=data data-type="+data.num+">\
+                    <span style='width:15px; text-align:right;display:inline-block;'>"+data.num+"</span>\
+                    <span>"+data.date+"</span>\
+                    <span style=text-align:right>"+data.importance+"</span>\
+                    <span style='width:30%;display:inline-block;margin-left:45px;'>"+data.txt+"</span>\
+                    <span>\
+                      <input type=checkbox id=unfinish name=unfinish class=unfinish>\
+                      <label for=finish>完成</label>\
+                    </span>\
+                  </div>\
+                  ";
+                  $(".formname").after(content);
+
+                <?php } ?>
               },
               error:function(jqXHR){
                 alert("發生錯誤"+jqXHR.status);

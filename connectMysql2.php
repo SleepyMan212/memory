@@ -10,6 +10,6 @@
     $db_link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db_link->query('SET NAMES "utf8"');
   } catch (PDOException $e) {
-    print "Error".$e->getMessage()."aa";
+    print "Error".$e->getMessage();
   }
   ?>

@@ -14,7 +14,7 @@
   $finish_task = $db_link->query($query_finish_task);
 
   if($is_sucess){
-    $query_next_data = "SELECT * FROM `task` WHERE finish=0 AND num>{$_GET['num']} LIMIT 3,4";
+    $query_next_data = "SELECT * FROM `task` WHERE finish=0 AND num>{$_GET['num']} LIMIT 4,5";
     $next_data_record=$db_link->query($query_next_data);
     $next_data = $next_data_record->fetch(PDO::FETCH_ASSOC);
 

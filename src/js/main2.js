@@ -1,14 +1,11 @@
 setInterval(function() {
   time = new Date();
-  $(".show_time").text(time.getFullYear()+"/"+ time.getDate()+"/"+time.getDay());
-  // $(".show_time").append("<br>");
+  $(".show_time").text(time.getFullYear()+"/"+ (time.getMonth()+1)+"/"+time.getDate());
   $(".show_time").append(" " +time.getHours()+":"+ time.getMinutes()+":"+time.getSeconds());
-  // $(".show_time").text(new Date()));
 },1000);
 function AJAX(e) {
   console.log($(e.target).parents('.data')[0].dataset.type); //取得完成事件的編號
   if($(e.target.checked)[0]){
-    // console.log("WEQAAA");
     $.ajax({
       type:'get',
       url:`finish.php?finish=1&num=${$(e.target).parents('.data')[0].dataset.type}`,
@@ -16,10 +13,6 @@ function AJAX(e) {
       success:(data)=>{
         console.log(data);
         $(e.target).parents('.data').hide(1000);
-        $(e.target.checked)[0]=false;
-        // $(e.target).parents('.data').remove(1000);
-        // console.log(data.msg+"AA");
-        // console.log(data.nodata);
         console.log(data.num+" "+data.finish_num);
         $("#total_unfinish").text("總共還有: "+(data.num-data.finish_num)+" 筆事項");
         $("#total_finish").text("總共完成: "+(data.finish_num)+" 筆事項")
@@ -38,17 +31,8 @@ function AJAX(e) {
           </div>\
           ";
           $(".data:last").after(content);
-          // 把新加入的元素加入監聽事件
-          // $(".data:last").change( (e)=>{
-          //   console.log($(e.target).parents('.data'));
-          //   if($(e.target.checked)[0]){
-          //     $(e.target).parents('.data').hide(1000);
-          //   }
-          // });
-        }
-        // sleep(1000);
-        // $(e.target).parents('.data').remove();
 
+        }
       },
 
       error:function(jqXHR){
@@ -61,7 +45,3 @@ function AJAX(e) {
   }
 }
 $(document).on('change',".unfinish",AJAX);
-
-
-// setInterval($(".show_time").text(new Date()),1000);
-// $(".show_time").text(new Date().Format("yyyy-MM-dd HH:mm:ss"));
