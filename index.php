@@ -42,6 +42,7 @@ require 'connectMysql2.php';
       <ul>
         <li><a href="./index.php">首頁</a></li>
         <li><a href="./project.php">專案</a></li>
+        <li><a href="./project/show_complete_pro.php">完成</a></li>
       </ul>
     </div>
     <div class="right_panel">

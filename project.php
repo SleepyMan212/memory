@@ -10,7 +10,7 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
     $query_all_data = "SELECT name, id, due_date FROM `project`";
     $query_limit_data = "SELECT name, id, due_date FROM `project` WHERE finish = 0
                           ORDER BY id ASC LIMIT $startRow_records , $pageRow_records";
-    $query_num = "SELECT * FROM `project` ";
+    $query_num = "SELECT * FROM `project`  WHERE finish = 0";
     $data_num = $db_link->query($query_num)->rowCount();
     $all_data = $db_link->query($query_all_data);
     $limit_data = $db_link->query($query_limit_data);
@@ -39,6 +39,7 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
       <ul>
         <li><a href="./index.php">首頁</a></li>
         <li><a href="./project.php">專案</a></li>
+        <li><a href="./project/show_complete_pro.php">完成</a></li>
       </ul>
     </div>
   <div class="left_panel">
@@ -46,15 +47,16 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
     <div class="list" id="add_project">
       <label for="project_name">專案名: </label>
       <input type="text" name=""  id="project_name" placeholder="專案名" class="input">
-      <label for="project_date">目標完成時間: </label>
+      <label for="project_
+      ">目標完成時間: </label>
       <input type="date" name=""  id="project_date" class="input">
       <button type="button" name="button" class="btn btn-outline-success input" id="submit">送出</button>
     </div>
     <div class="list" id="list">
       <div class="field">
         <h2>專案</h2>
-        <p id="total_finish" style="float:right; margin-right:10px;" >總共完成: <?php echo $data_num-$all_record; ?> 筆事項</p>
-        <p id="total_unfinish">總共還有: <?php echo $all_record; ?> 筆事項</p>
+        <p id="total_finish" style="float:right; margin-right:10px;" >總共完成: <?php echo $all_record-$data_num ?> 筆事項</p>
+        <p id="total_unfinish">總共還有: <?php echo $data_num; ?> 筆事項</p>
       </div>
       <hr>
       <div class="formname">
@@ -103,16 +105,16 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
     </div>
   </div>
   <div class="right_panel border">
-    <div class="">
-      <div class="informaton">
+    <div>
+      <div class="information">
         <span class="input">編號:</span>
         <span class="text-left input" id='pro_num'></span>
       </div>
-      <div class="informaton">
+      <div class="information">
         <span class="input">專案名:</span>
         <span class="text-left input" id='pro_name'></span>
       </div>
-      <div class="informaton">
+      <div class="information">
         <span class="input">預計時間:</span>
         <span class="text-left input" id="due_day"></span>
       </div>
@@ -143,6 +145,7 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
         $("#new_project").text("新增專案");
         show = true;
       }
+
       // $("#new_project").text("查看專案");
 
     });
@@ -158,15 +161,23 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
           due_date: $("#project_date").val()
         },
         success:(data)=>{
+          $("#total_unfinish").text("總共還有: "+data.pro_num+" 筆事項");
           console.log(data);
           content="\
           <div class=data data-id="+data.id+">\
-            <span>"+data.id+"</span>\
+            <span style='width:5%;'>"+data.id+"</span>\
             <span>"+data.due_date+"</span>\
             <span style=margin-left:40px>"+data.name+"</span>\
           </div>\
           ";
           console.log(data.msg);
+          if(data.pro_num<=4){
+            if($(".data").length>0){
+              $(".data:last").after(content);
+            }else{
+              $(".fromname").after(content)
+            }
+          }
           // alert(data);
         },
         error:(jqXHR)=>{
@@ -193,14 +204,14 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
           success:(data)=>{
             // console.log(data);
             $("#due_day").text(data[0].due_date);
-            $("#pro_name").text(data[0].pro_name);
-            $("#pro_num").text(data[0].pro_num);
+            $("#pro_name").text(data[0].name);
+            $("#pro_num").text(data[0].id);
 
             console.log(data[1]);
             if(data[1]){
               i=1;
               data[1].forEach((d)=>{
-                let content= "<div class='informaton pro_task "+(d.finish==1?'checked':'')+"'>\
+                let content= "<div class='information pro_task "+(d.finish==1?'checked':'')+"'>\
                   <span class='input' style='display:inline-block;text-align:right; width:45px; '>"+(i++)+"</span>\
                   <span class='text-left input task'>"+d.txt+"</span>\
                   <span class='input '>完成: </span>\
@@ -240,7 +251,7 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
 
               // console.log(data.msg);
               // console.log(data);
-              const content= "<div class='informaton pro_task'>\
+              const content= "<div class='information pro_task'>\
                 <span class='input'style='display:inline-block;text-align:right; width:45px; '>"+data.num+"</span>\
                 <span class='text-left input task'>"+data.task+"</span>\
                 <span class='input '>完成: </span>\
@@ -292,6 +303,40 @@ if(isset($_GET['page'])) $num_pages = $_GET['page'];
         error:(jqXHR)=>{
           console.log("發生錯誤"+jqXHR.status);
         }
+      });
+    });
+    $("#solve").click((e)=>{
+      $.ajax({
+        type:'post',
+        url:'./project/complete_pro.php',
+        dataType:'json',
+        data:{
+          pro_id: $("#pro_num").text()
+        },
+        success:(data)=>{
+          $("#total_unfinish").text("總共還有: "+data[0].unfin_num+" 筆事項");
+          $("#total_finish").text("總共完成: "+data[0].fin_num+" 筆事項");
+          console.log(data);
+          $(".pro_task").hide(1000);
+          if(data[1][0]){
+          const content="\
+          <div class=data data-id="+data[1][0].id+">\
+            <span style='width:5%;'>"+data[1][0].id+"</span>\
+            <span>"+data[1][0].due_date+"</span>\
+            <span style=margin-left:40px>"+data[1][0].name+"</span>\
+          </div>\
+          ";
+          $(".data:last").after(content);
+          }
+          $(".data[data-id="+$("#pro_num").text()+"]").remove();
+          $("#due_day").text("");
+          $("#pro_name").text("");
+          $("#pro_num").text("");
+        },
+        error:(jqXHR)=>{
+          console.log("發生錯誤: " + jqXHR.status);
+        },
+
       });
     });
   </script>
